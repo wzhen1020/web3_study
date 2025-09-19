@@ -76,10 +76,12 @@ contract MemeToken is ERC20, Ownable, ReentrancyGuard {
 
     // 构造函数
     constructor(
+        string memory name,
+        string memory symbol,
         uint256 totalSupply,
         address routerAddress,
         address factoryAddress
-    ) ERC20("MyMeme", "memeToken") Ownable(msg.sender) {
+    ) ERC20(name, symbol) Ownable(msg.sender) {
         // 部署者初始持有全部代币
         _mint(msg.sender, totalSupply * 10 ** decimals());
 
@@ -106,7 +108,7 @@ contract MemeToken is ERC20, Ownable, ReentrancyGuard {
         // 默认总数的1%
         maxTxAmount = (totalSupply * 10 ** decimals()) / 100;
         // 每日最大交易次数
-        maxDailyTxCount = 10;
+        maxDailyTxCount = 5;
     }
 
     // 转账
@@ -140,12 +142,12 @@ contract MemeToken is ERC20, Ownable, ReentrancyGuard {
             // 转交易税
             _transfer(sender, taxCollector, taxAmount);
         }
-
-        // 转帐
-        _transfer(sender, to, value);
         // 销毁
         _burn(sender, burnAmount);
         burnCount += burnAmount;
+        // 转帐
+        _transfer(sender, to, value);
+
 
         return true;
     }
@@ -174,7 +176,7 @@ contract MemeToken is ERC20, Ownable, ReentrancyGuard {
                 balanceOf(from) >= taxAmount + value + burnAmount,
                 "Insufficient balance"
             );
-            _spendAllowance(spender, from, value + taxAmount);
+            _spendAllowance(spender, from, value);
             _transfer(from, taxCollector, taxAmount);
         } else {
             _spendAllowance(spender, from, value);
@@ -333,7 +335,7 @@ contract MemeToken is ERC20, Ownable, ReentrancyGuard {
      * @param deadline 截止时间 秒级时间戳
      * @dev 用户需先 approve 合约足够 LP token
      */
-    function removeLiquidityETH(
+    function removeLiquidity(
         uint256 liquidity,
         uint256 amountETHMin,
         uint256 deadline
