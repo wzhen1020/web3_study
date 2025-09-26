@@ -3,12 +3,18 @@ pragma solidity ^0.8.10;
 
 import "forge-std/Test.sol";
 import "../src/Math.sol";
+import "../src/MathOptimized1.sol";
+import "../src/MathOptimized2.sol";
 
 contract MathTest is Test {
-    Math math;
+    // Math math;
+    // MathOptimized1 math;
+    MathOptimized2 math;
 
     function setUp() public {
-        math = new Math();
+        // math = new Math();
+        // math = new MathOptimized1();
+        math = new MathOptimized2();
     }
 
     function testAdd() public {
